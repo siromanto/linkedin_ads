@@ -7,25 +7,21 @@ import json
 from urllib.parse import urlencode
 
 
-class BingWebmasterApi:
+class LinkedinAdsApi:
 
-    def __init__(self, timeout=20):
-        # self.api_key = api_key or config.API_KEY
-        # self.api_key = api_key
+    def __init__(self, headers, timeout=30):
+        self.headers = headers
         self.endpoint = 'https://api.linkedin.com/v2/'
         self.h = httplib2.Http("/tmp/.cache", timeout=timeout)
 
     def __getattr__(self, item):
-        def call(**kwargs):
-            kwargs.update({
-                'apikey': self.api_key
-            })
+        def call(params):
             _uri = '{endpoint}{function}?{query}'.format(
                 endpoint=self.endpoint,
                 function=item,
-                query=urlencode(kwargs)
+                query=params
             )
-            resp, content = self.h.request(_uri, 'GET')
+            resp, content = self.h.request(_uri, 'GET', headers=self.headers)
 
             if not resp.status == 200:
                 if resp.status == 404:

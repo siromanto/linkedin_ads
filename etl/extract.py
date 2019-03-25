@@ -3,11 +3,7 @@ import json
 from urllib.parse import urlencode
 
 from configs import config, helpers
-
-# TEMP
-import httplib2
-import json
-from urllib.parse import urlencode
+from linkedin.api import LinkedinAdsApi
 
 CSV_COLUMNS = ['externalWebsitePostClickConversions', 'viralImpressions', 'DATE', 'adUnitClicks', 'companyPageClicks',
                'viralOneClickLeads', 'textUrlClicks', 'costInLocalCurrency', 'viralLikes', 'viralOtherEngagements',
@@ -20,43 +16,48 @@ CSV_COLUMNS = ['externalWebsitePostClickConversions', 'viralImpressions', 'DATE'
                'viralLandingPageClicks', 'viralExternalWebsitePostClickConversions', 'externalWebsiteConversions',
                'cardImpressions', 'leadGenerationMailContactInfoShares', 'leadGenerationMailInterestedClicks',
                'opens', 'clicks', 'totalEngagements', 'viralClicks', 'pivotValues_sponsoredAccount', 'pivotValues_share'
-]
+               ]
 
 
 def extract_data():
-    h = httplib2.Http("/tmp/.cache", timeout=50)
-    _uri = "https://api.linkedin.com/v2/adAnalyticsV2?q=analytics&dateRange.start.month=1&dateRange.start.day=1&dateRange.start.year=2018&timeGranularity=MONTHLY&pivot=ACCOUNT&campaigns=urn:li:sponsoredCampaign:126706406"
-    _uri2 = "https://api.linkedin.com/v2/adAnalyticsV2?q=statistics&dateRange.start.month=1&dateRange.start.day=1&dateRange.start.year=2018&timeGranularity=DAILY&pivots=ACCOUNT&pivots=SHARE&campaigns=urn:li:sponsoredCampaign:126706406"
-    resp, content = h.request(_uri, 'GET', headers={
-        'Authorization': 'Bearer AQXm6MfmRtaAht_dlXzZ-nBMasAza-79lPP-9lpL08B-glGRDZaAgucdeBpB5Mob9lWjO7V8vzybzdeJDV1-jGa9Cu6c2u18iJdop_t0iNXWFQk9DKpJh3xasyMyLNhtPAMiwI-53puEbvkuviRi807cKrsojEgomSy2em7XJmvf_zQZZoHqJUHnJNKADP3fV3lxR6fWAM2dPhYN0XRXpQoOI6omPIDPtDfSX0nTV9VwNM1OdtpoTpPDdvCs9IzXeO976O8iFEe1N_E_-Hbp1OLcJ-FGt8btfBxVm0zepgMZQ9jRtimQm9AURXkdSs_9JhX1kSiD95yKH_qD0wJbEyzGdM4lOw'})
+    credentials = helpers.get_client_config(
+        conf_path=r'/Users/siromanto/ralabs/0.projects/conDati/LinkedinAds/configs/Linkedin.json')
+    # credentials = helpers.get_client_config(conf_path=r'/opt/workbench/users/afuser/airflow/dags/credentials/AmazonAdsKeys/Toweltech.json')
 
-    resp1, content1 = h.request(_uri2, 'GET', headers={
-        'Authorization': 'Bearer AQXm6MfmRtaAht_dlXzZ-nBMasAza-79lPP-9lpL08B-glGRDZaAgucdeBpB5Mob9lWjO7V8vzybzdeJDV1-jGa9Cu6c2u18iJdop_t0iNXWFQk9DKpJh3xasyMyLNhtPAMiwI-53puEbvkuviRi807cKrsojEgomSy2em7XJmvf_zQZZoHqJUHnJNKADP3fV3lxR6fWAM2dPhYN0XRXpQoOI6omPIDPtDfSX0nTV9VwNM1OdtpoTpPDdvCs9IzXeO976O8iFEe1N_E_-Hbp1OLcJ-FGt8btfBxVm0zepgMZQ9jRtimQm9AURXkdSs_9JhX1kSiD95yKH_qD0wJbEyzGdM4lOw'})
+    access_token = credentials.get("access_token")
+    access_headers = {'Authorization': 'Bearer {}'.format(access_token)}
 
-    monthly_data = json.loads(content).get("elements")
-    daily_data = json.loads(content1).get("elements")
+    api = LinkedinAdsApi(headers=access_headers)
+    params = [
+        {"q": "statistics"},
+        {"dateRange.start.month": 1},
+        {"dateRange.start.day": 1},
+        {"dateRange.start.year": 2018},
+        {"timeGranularity": "DAILY"},
+        {"pivots": "ACCOUNT"},
+        {"pivots": "SHARE"},
+        {"campaigns": "urn:li:sponsoredCampaign:126706406"}
+    ]
+    query_params = "&".join("".join("{}={}".format(k, v) for k, v in t.items()) for t in params)
 
-
-    print(len(monthly_data))
-    print(len(daily_data))
-
-    print('asdsad')
+    daily_data = api.adAnalyticsV2(params=query_params).get("elements")
 
     with open(config.DATA_PATH, mode='w', encoding='utf8') as raw_csv:
-        writer = helpers.prepare_header_for_clear_csv(raw_csv, CSV_COLUMNS)
+        writer = helpers.prepare_header_for_clear_csv(raw_csv, helpers.CSV_COLUMNS)
 
         print(f'DATA COLUMNS === {len(daily_data)}')
         r = 0
 
         for item in daily_data:
-            r += 1
-
-
             row = {}
             row.update({
+                'DATE': "{}-{}-{}".format(
+                    item["dateRange"]["start"]["year"],
+                    item["dateRange"]["start"]["month"],
+                    item["dateRange"]["start"]["day"]
+                ),
                 'externalWebsitePostClickConversions': item.get("externalWebsitePostClickConversions"),
                 'viralImpressions': item.get('viralImpressions'),
-                'DATE': f'{item["dateRange"]["start"]["year"]}-{item["dateRange"]["start"]["month"]}-{item["dateRange"]["start"]["day"]}',
                 'adUnitClicks': item.get('adUnitClicks'),
                 'companyPageClicks': item.get('companyPageClicks'),
                 'viralOneClickLeads': item.get('viralOneClickLeads'),
@@ -104,11 +105,39 @@ def extract_data():
                 'pivotValues_share': item.get('pivotValues')[0]
             })
 
-            print(f'ROW --- {r}, DATE --- {row["DATE"]}')
+            r += 1
+            print("ROW --- {}, DATE --- {}".format(r, row["DATE"]))
 
             writer.writerow(row)
+
+
+def test_response():
+    statuses = ['ACTIVE', 'PAUSED', 'ARCHIVED', 'COMPLETED', 'CANCELED', 'DRAFT']
+    all_compaigns = []
+
+    for status in statuses:
+        data = get_data_from_response(status)
+        print(f'STATUS --- {status}, AVAILABLE DATA --- {len(data)}')
+
+        all_compaigns.extend(data)
+
+    print(len(all_compaigns))
+    print(all_compaigns)
+
+
+def get_data_from_response(status):
+    h = httplib2.Http("/tmp/.cache", timeout=50)
+    # _uri = "https://api.linkedin.com/v2/adCampaignsV2?q=search&search.status.values[0]=ACTIVE"
+    _uri = f"https://api.linkedin.com/v2/adCampaignsV2?q=search&search.status.values[0]={status}"
+
+    resp, content = h.request(_uri, 'GET', headers={
+        'Authorization': 'Bearer AQXm6MfmRtaAht_dlXzZ-nBMasAza-79lPP-9lpL08B-glGRDZaAgucdeBpB5Mob9lWjO7V8vzybzdeJDV1-jGa9Cu6c2u18iJdop_t0iNXWFQk9DKpJh3xasyMyLNhtPAMiwI-53puEbvkuviRi807cKrsojEgomSy2em7XJmvf_zQZZoHqJUHnJNKADP3fV3lxR6fWAM2dPhYN0XRXpQoOI6omPIDPtDfSX0nTV9VwNM1OdtpoTpPDdvCs9IzXeO976O8iFEe1N_E_-Hbp1OLcJ-FGt8btfBxVm0zepgMZQ9jRtimQm9AURXkdSs_9JhX1kSiD95yKH_qD0wJbEyzGdM4lOw'})
+
+    data = json.loads(content).get("elements")
+    return data
 
 
 
 if __name__ == '__main__':
     extract_data()
+    # test_response()
