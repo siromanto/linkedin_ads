@@ -18,6 +18,9 @@ def extract_data():
 
             print(f'DATA COLUMNS --- {len(daily_data)}')
 
+
+
+
             for item in daily_data:
                 row = {}
                 row.update({
@@ -30,7 +33,11 @@ def extract_data():
                     'campaign_id': campaign['id'],
                     'bid': campaign['bid'],
                     'bid_currency': campaign['bid_currency'],
-                    'status': campaign['status'],
+                    'status': campaign['status'].lower(),
+                    'costType': campaign['costType'],
+                    'type': campaign['type'],
+                    'objectiveType': campaign['objectiveType'],
+                    'optimizationTargetType': campaign['optimizationTargetType'],
 
                     'costInLocalCurrency': item.get('costInLocalCurrency'),
                     'shares': item.get('shares'),
@@ -44,7 +51,7 @@ def extract_data():
                     'opens': item.get('opens'),
                     'clicks': item.get('clicks'),
                     'totalEngagements': item.get('totalEngagements'),
-                    'share_urn': re.search(r'\d+', item.get('pivotValues')[1]).group() if len(item.get('pivotValues')) > 1 else ''
+                    'share_urn': re.search(r'\d+', item.get('pivotValues')[-1]).group() if len(item.get('pivotValues')) > 1 else ''
                 })
 
                 writer.writerow(row)
@@ -68,7 +75,7 @@ def get_campaign_data(campaign):
 
     api = LinkedinAdsApi(headers=access_headers)
 
-    print('START WORKING WITH CAMPAIGN --- {}, ID --- {}'.format(campaign['campaign_name'], campaign["id"]))
+    print('START WORKING WITH CAMPAIGN --- {}, ID --- {}, STATUS --- {}'.format(campaign['campaign_name'], campaign["id"], campaign["status"]))
 
     test_params = {
         'ACTIVE': [
@@ -113,7 +120,12 @@ def get_all_campaignes_info():
             'id': n['id'],
             'bid': n["unitCost"]["amount"],
             'bid_currency': n["unitCost"]["currencyCode"],
-            'status': n['status']
+            'status': n['status'],
+            'costType': n['costType'],
+            'type': n['type'],
+            'objectiveType': n['objectiveType'],
+            'optimizationTargetType': n['optimizationTargetType']
+
         } for n in raw_data]
 
         print(f'STATUS --- {status}, AVAILABLE DATA --- {len(data)}')

@@ -22,7 +22,8 @@ import snowflake.connector as connector
 #                'pivotValues_share'
 # ]
 
-CSV_COLUMNS = ['DATE', 'campaign_name', 'campaign_id', 'bid', 'bid_currency', 'status', 'costInLocalCurrency',
+CSV_COLUMNS = ['DATE', 'campaign_name', 'campaign_id', 'bid', 'bid_currency', 'status', 'costType', 'type',
+               'objectiveType', 'optimizationTargetType', 'costInLocalCurrency',
                'shares', 'pivot', 'likes', 'comments', 'costInUsd', 'follows', 'conversionValueInLocalCurrency',
                'impressions', 'opens', 'clicks', 'totalEngagements', 'share_urn'
 ]
@@ -36,12 +37,16 @@ RAW_DB_COLUMNS = \
     bid float,
     bid_currency string,
     status string,
-    costInLocalCurrency string, 
+    costType string,
+    type string,
+    objectiveType string,
+    optimizationTargetType string,
+    costInLocalCurrency float, 
     shares integer, 
     pivot string, 
     likes integer, 
     comments integer,
-    costInUsd integer, 
+    costInUsd float, 
     follows integer, 
     conversionValueInLocalCurrency string, 
     impressions integer, 
@@ -151,7 +156,7 @@ V16_DB_COLUMNS = \
     NEWUSERS integer,
     TRANSACTIONREVENUE integer,
     PAGEVIEWS integer,
-    ADCOST integer,
+    ADCOST NUMBER(38,4),
     IMPRESSIONSHARE varchar,
     SAMPLINGLEVEL string,
     EMAILCLICKS integer,
@@ -220,9 +225,9 @@ def perform_db_routines(client_name, sql):
 
     # client_config = get_client_config(client_name, configfile)
     client_config = get_client_config(
-        r'/Users/siromanto/ralabs/0.projects/conDati/BingSearchConsole/configs/BingConsole.json')
+        r'/Users/siromanto/ralabs/0.projects/conDati/LinkedinAds/configs/Linkedin.json')
     config_db = get_client_config(
-        '/Users/siromanto/ralabs/0.projects/conDati/BingSearchConsole/configs/Siromanto_account.json')
+        '/Users/siromanto/ralabs/0.projects/conDati/LinkedinAds/configs/Siromanto_account.json')
 
     conn = establish_db_conn(config_db['user'],
                              config_db['pwd'],
