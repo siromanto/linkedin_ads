@@ -5,28 +5,13 @@ import time
 import csv
 import snowflake.connector as connector
 
-# DATETIME_FORMAT = '%m/%d/%Y'
-
-# CSV_COLUMNS = ['DATE', 'campaign_name', 'campaign_id', 'bid', 'bid_currency', 'status',
-#                'externalWebsitePostClickConversions', 'viralImpressions', 'adUnitClicks', 'companyPageClicks',
-#                'viralOneClickLeads', 'textUrlClicks', 'costInLocalCurrency', 'viralLikes', 'viralOtherEngagements',
-#                'viralExternalWebsiteConversions', 'shares', 'viralCardClicks', 'pivot', 'cardClicks',
-#                'viralExternalWebsitePostViewConversions', 'viralTotalEngagements', 'viralCompanyPageClicks',
-#                'likes', 'viralComments', 'actionClicks', 'viralShares', 'pivotValue', 'comments',
-#                'externalWebsitePostViewConversions', 'costInUsd', 'oneClickLeads', 'landingPageClicks',
-#                'viralCardImpressions', 'follows', 'oneClickLeadFormOpens', 'viralOneClickLeadFormOpens',
-#                'conversionValueInLocalCurrency', 'viralFollows', 'impressions', 'otherEngagements',
-#                'viralLandingPageClicks', 'viralExternalWebsitePostClickConversions', 'externalWebsiteConversions',
-#                'cardImpressions', 'leadGenerationMailContactInfoShares', 'leadGenerationMailInterestedClicks',
-#                'opens', 'clicks', 'totalEngagements', 'viralClicks', 'pivotValues_sponsoredAccount',
-#                'pivotValues_share'
-# ]
+DAYLOAD = 1
 
 CSV_COLUMNS = ['DATE', 'campaign_name', 'campaign_id', 'bid', 'bid_currency', 'status', 'costType', 'type',
                'objectiveType', 'optimizationTargetType', 'costInLocalCurrency',
                'shares', 'pivot', 'likes', 'comments', 'costInUsd', 'follows', 'conversionValueInLocalCurrency',
                'impressions', 'opens', 'clicks', 'totalEngagements', 'share_urn'
-]
+               ]
 
 
 RAW_DB_COLUMNS = \
@@ -56,58 +41,6 @@ RAW_DB_COLUMNS = \
     share_urn string
     """
 
-#
-# RAW_DB_COLUMNS = \
-#     """
-#     externalWebsitePostClickConversions integer,
-#     viralImpressions integer,
-#     DATE date,
-#     adUnitClicks integer,
-#     companyPageClicks integer,
-#     viralOneClickLeads integer,
-#     textUrlClicks integer,
-#     costInLocalCurrency string,
-#     viralLikes integer,
-#     viralOtherEngagements integer,
-#     viralExternalWebsiteConversions integer,
-#     shares integer,
-#     viralCardClicks integer,
-#     pivot string,
-#     cardClicks integer,
-#     viralExternalWebsitePostViewConversions integer,
-#     viralTotalEngagements integer,
-#     viralCompanyPageClicks integer,
-#     likes integer,
-#     viralComments integer,
-#     actionClicks integer,
-#     viralShares integer,
-#     pivotValue string,
-#     comments integer,
-#     externalWebsitePostViewConversions integer,
-#     costInUsd integer,
-#     oneClickLeads integer,
-#     landingPageClicks integer,
-#     viralCardImpressions integer,
-#     follows integer,
-#     oneClickLeadFormOpens integer,
-#     viralOneClickLeadFormOpens integer,
-#     conversionValueInLocalCurrency string,
-#     viralFollows integer,
-#     impressions integer,
-#     otherEngagements integer,
-#     viralLandingPageClicks integer,
-#     viralExternalWebsitePostClickConversions integer,
-#     externalWebsiteConversions integer,
-#     cardImpressions integer,
-#     leadGenerationMailContactInfoShares integer,
-#     leadGenerationMailInterestedClicks integer,
-#     opens integer,
-#     clicks integer,
-#     totalEngagements integer,
-#     viralClicks integer,
-#     pivotValues_sponsoredAccount string,
-#     pivotValues_share string
-#     """
 
 QUERY_STATS_DB_COLUMNS = \
     """SOURCE string, 

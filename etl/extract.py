@@ -1,25 +1,41 @@
 import httplib2
 import json
 import re
+import time
 from urllib.parse import urlencode
+from datetime import *
 
 from configs import config, helpers
 from linkedin.api import LinkedinAdsApi
 
 
-def extract_data():
+def per_delta(start, end, delta):
+    curr = start
+    while curr < end:
+        yield curr
+        curr += delta
+
+
+def extract_daily():
+    dates = [s.strftime('%Y-%m-%d') for s in per_delta(
+        date.today() - timedelta(days=helpers.DAYLOAD),
+        date.today(),
+        timedelta(days=1)
+    )]
+    start_date, end_date = dates[0], dates[-1]
+
+    extract_data(start_date, end_date)
+
+
+def extract_data(start_date='2017-01-04', end_date=date.today().strftime('%Y-%m-%d')):
     all_compaigns = get_all_campaignes_info()
 
     with open(config.DATA_PATH, mode='w', encoding='utf8') as raw_csv:
         writer = helpers.prepare_header_for_clear_csv(raw_csv, helpers.CSV_COLUMNS)
 
         for campaign in all_compaigns:
-            daily_data = get_campaign_data(campaign)
-
+            daily_data = get_campaign_data(campaign, start_date, end_date)
             print(f'DATA COLUMNS --- {len(daily_data)}')
-
-
-
 
             for item in daily_data:
                 row = {}
@@ -55,16 +71,14 @@ def extract_data():
                 })
 
                 writer.writerow(row)
-
             print('*'*200)
 
 
-# def parse_ids(id):
-#     re.search(r'\d+', id)
-#     timestamp = a.group(0)
+def get_campaign_data(campaign, start_date, end_date):
+    start_year, start_month, start_day = start_date.split('-')
+    end_year, end_month, end_day = end_date.split('-')
 
 
-def get_campaign_data(campaign):
     credentials = helpers.get_client_config(
         conf_path=r'/Users/siromanto/ralabs/0.projects/conDati/LinkedinAds/configs/Linkedin.json')
     # credentials = helpers.get_client_config(conf_path=r'/opt/workbench/users/afuser/airflow/dags/credentials/AmazonAdsKeys/Toweltech.json')
@@ -80,22 +94,28 @@ def get_campaign_data(campaign):
     test_params = {
         'ACTIVE': [
             {"q": "statistics"},
-            {"dateRange.start.month": 4},
-            {"dateRange.start.day": 1},
-            {"dateRange.start.year": 2017},
+            {"dateRange.start.month": start_month},
+            {"dateRange.start.day": start_day},
+            {"dateRange.start.year": start_year},
+            {"dateRange.end.month": end_month},
+            {"dateRange.end.day": end_day},
+            {"dateRange.end.year": end_year},
             {"timeGranularity": "DAILY"},
             {"pivots": "ACCOUNT"},
             {"pivots": "SHARE"},
-            {"campaigns": "urn:li:sponsoredCampaign:{}".format(company_id)}  # 126706406, 125006796
+            {"campaigns": "urn:li:sponsoredCampaign:{}".format(company_id)}
         ],
         'OTHER': [
             {"q": "statistics"},
-            {"dateRange.start.month": 4},
-            {"dateRange.start.day": 1},
-            {"dateRange.start.year": 2017},
+            {"dateRange.start.month": start_month},
+            {"dateRange.start.day": start_day},
+            {"dateRange.start.year": start_year},
+            {"dateRange.end.month": end_month},
+            {"dateRange.end.day": end_day},
+            {"dateRange.end.year": end_year},
             {"timeGranularity": "DAILY"},
             {"pivots": "ACCOUNT"},
-            {"campaigns": "urn:li:sponsoredCampaign:{}".format(company_id)}  # 126706406, 125006796
+            {"campaigns": "urn:li:sponsoredCampaign:{}".format(company_id)}
         ],
     }
 
@@ -149,5 +169,8 @@ def get_data_from_response(status):
 
 
 if __name__ == '__main__':
-    extract_data()
+    # extract_data()
     # get_all_campaignes_info()
+
+    extract_daily()
+
