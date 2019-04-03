@@ -1,8 +1,8 @@
+# -*- coding: utf-8 -*-
+
 import httplib2
 import json
 import re
-import time
-from urllib.parse import urlencode
 from datetime import *
 
 from configs import config, helpers
@@ -28,6 +28,7 @@ def extract_daily():
 
 
 def extract_data(start_date='2017-01-04', end_date=date.today().strftime('%Y-%m-%d')):
+# def extract_data(start_date='2019-04-01', end_date=date.today().strftime('%Y-%m-%d')):
     all_compaigns = get_all_campaignes_info()
 
     with open(config.DATA_PATH, mode='w', encoding='utf8') as raw_csv:
@@ -80,7 +81,7 @@ def get_campaign_data(campaign, start_date, end_date):
 
 
     credentials = helpers.get_client_config(
-        conf_path=r'/Users/siromanto/ralabs/0.projects/conDati/LinkedinAds/configs/Linkedin.json')
+        conf_path=r'/Users/siromanto/ralabs/0.projects/conDati/LinkedinAds/configs/Linkedin1.json')
     # credentials = helpers.get_client_config(conf_path=r'/opt/workbench/users/afuser/airflow/dags/credentials/AmazonAdsKeys/Toweltech.json')
 
     access_token = credentials.get("access_token")
@@ -156,21 +157,19 @@ def get_all_campaignes_info():
     return all_compaigns
 
 
-def get_data_from_response(status):
+def get_data_from_response(status):  # TODO: Refacor this
     h = httplib2.Http("/tmp/.cache", timeout=50)
-    # _uri = "https://api.linkedin.com/v2/adCampaignsV2?q=search&search.status.values[0]=ACTIVE"
     _uri = f"https://api.linkedin.com/v2/adCampaignsV2?q=search&search.status.values[0]={status}"
 
     resp, content = h.request(_uri, 'GET', headers={
         'Authorization': 'Bearer AQXm6MfmRtaAht_dlXzZ-nBMasAza-79lPP-9lpL08B-glGRDZaAgucdeBpB5Mob9lWjO7V8vzybzdeJDV1-jGa9Cu6c2u18iJdop_t0iNXWFQk9DKpJh3xasyMyLNhtPAMiwI-53puEbvkuviRi807cKrsojEgomSy2em7XJmvf_zQZZoHqJUHnJNKADP3fV3lxR6fWAM2dPhYN0XRXpQoOI6omPIDPtDfSX0nTV9VwNM1OdtpoTpPDdvCs9IzXeO976O8iFEe1N_E_-Hbp1OLcJ-FGt8btfBxVm0zepgMZQ9jRtimQm9AURXkdSs_9JhX1kSiD95yKH_qD0wJbEyzGdM4lOw'})
 
-    data = json.loads(content).get("elements")
+    data = json.loads(content.decode('utf-8')).get("elements")
     return data
 
 
 if __name__ == '__main__':
     # extract_data()
-    # get_all_campaignes_info()
-
+    # extract_data(start_date='2017-01-04', end_date='2019-04-01')
     extract_daily()
 
