@@ -19,7 +19,7 @@ def load_data():
     load_raw_data_from_csv(report_path)
 
 
-def load_weekly():
+def load_daily():
     report_path = config.DATA_PATH
     load_raw_data_from_csv(report_path)
 
@@ -27,11 +27,11 @@ def load_weekly():
 def load_raw_data_from_csv(file_path):
     file_name = file_path.rsplit('/', 1)[-1]
 
-    client_config = helpers.get_client_config(r'/Users/siromanto/ralabs/0.projects/conDati/LinkedinAds/configs/Linkedin.json')
+    client_config = helpers.get_client_config(r'/Users/siromanto/ralabs/0.projects/conDati/LinkedinAds/configs/Linkedin1.json')
     db_config = helpers.get_client_config('../configs/Siromanto_account.json')
 
     # client_config = helpers.get_client_config(r'/opt/workbench/users/afuser/airflow/dags/credentials/BingConsole/Toweltech.json')
-    # db_config = helpers.get_client_config('credentials/SnowflakeKeys/CONDATI ----> .json')
+    # db_config = helpers.get_client_config('credentials/SnowflakeKeys/SnowflakeComputing.json'')
 
     conn = helpers.establish_db_conn(
         db_config['user'],
@@ -63,4 +63,4 @@ def load_raw_data_from_csv(file_path):
 
 
 if __name__ == '__main__':
-    load_weekly()
+    load_daily()

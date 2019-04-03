@@ -1,9 +1,9 @@
 CREATE OR REPLACE TEMPORARY TABLE {traffic_by_day_table} AS
 (SELECT
-DATE as SEARCHDATE,
+DATE as DATE,
 'Linkedin' as PROVIDER,
 CAMPAIGN_NAME as CAMPAIGN,
-TYPE as MEDIUM,
+'cpc' as MEDIUM,
 'Paid Social' as CHANNELGROUPING,
 'linkedin' as  SOURCE,
 STATUS as CAMPAIGNSTATUS,
@@ -12,7 +12,7 @@ COSTINLOCALCURRENCY as ADCOST,
 IMPRESSIONS as IMPRESSIONS,
 True as ISDATAGOLDEN
 from {db_table_raw} t1
-order by SEARCHDATE);
+order by DATE);
 
 
 INSERT INTO {prod_table_traffic_by_day}
@@ -79,11 +79,14 @@ goal20completions
 )
 
 select
-SEARCHDATE, PROVIDER, CAMPAIGN, MEDIUM, CHANNELGROUPING, SOURCE, CAMPAIGNSTATUS, ADCLICKS, ADCOST, IMPRESSIONS, True,
+DATE, PROVIDER, CAMPAIGN, MEDIUM, CHANNELGROUPING, SOURCE, CAMPAIGNSTATUS, ADCLICKS, ADCOST, IMPRESSIONS, True,
 
 '','','','','','',0,'','','','','',
 
 0,0,0,0,0,0,0,0,'','',0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 FROM   {traffic_by_day_table}
-where SEARCHDATE >= '2017-01-01';
+WHERE DATE >= '2017-01-01';
+
+-- WHERE DATE >= CURRENT_DATE()-{dayload}
+-- order by DATE;

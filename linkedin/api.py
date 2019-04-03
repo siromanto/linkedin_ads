@@ -35,6 +35,6 @@ class LinkedinAdsApi:
                         print('Not authorized.')
                 raise print('Unknown error occured [status code: %d] with response: %s' % (resp.status, content))
             else:
-                return json.loads(content)
+                return json.loads(content.decode('utf-8'))
 
         return call
