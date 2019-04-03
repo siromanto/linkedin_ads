@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 from airflow import DAG
 from airflow.operators.python_operator import PythonOperator
 
-from BingSearchConsole.etl import extract, load, transform
+from LinkedinAds.etl import extract, load, transform
 
 default_args = {
     'owner': 'afuser',
@@ -22,10 +22,10 @@ def initialize():
     pass
 
 
-with open('credentials/BingSearchConsoleKeys/BingConsole.json') as f:
+with open('credentials/LinkedinAdsKeys/Linkedin.json') as f:
     client_conf = json.load(f)
 
-dag_name = 'BingSearchConsole.v0'
+dag_name = 'LinkedinAds.v0'
 dag = DAG(
     dag_name,
     default_args=default_args,
@@ -33,25 +33,25 @@ dag = DAG(
     concurrency=3,
     schedule_interval='0 0 * * THU')
 
-extract_op = PythonOperator(task_id='extract_BingSearchConsole',
+extract_op = PythonOperator(task_id='extract_LinkedinAds',
                             dag=dag,
-                            python_callable=extract.extract_weekly,
+                            python_callable=extract.extract_daily,
                             trigger_rule='all_success',
                             provide_context=True,
                             # op_args=[client_name],
                             execution_timeout=timedelta(minutes=140))
 
-load_op = PythonOperator(task_id='load_BingSearchConsole',
+load_op = PythonOperator(task_id='load_LinkedinAds',
                          dag=dag,
-                         python_callable=load.load_weekly,
+                         python_callable=load.load_daily,
                          trigger_rule='all_success',
                          provide_context=True,
                          # op_args=[client_name],
                          execution_timeout=timedelta(minutes=15))
 
-transform_op = PythonOperator(task_id='transform_BingSearchConsole',
+transform_op = PythonOperator(task_id='transform_LinkedinAds',
                               dag=dag,
-                              python_callable=transform.transform_weekly,
+                              python_callable=transform.transform_daily,
                               trigger_rule='all_success',
                               provide_context=True,
                               # op_args=[client_name],
