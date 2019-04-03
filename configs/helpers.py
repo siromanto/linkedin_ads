@@ -158,7 +158,7 @@ def perform_db_routines(client_name, sql):
 
     # client_config = get_client_config(client_name, configfile)
     client_config = get_client_config(
-        r'/Users/siromanto/ralabs/0.projects/conDati/LinkedinAds/configs/Linkedin.json')
+        r'/Users/siromanto/ralabs/0.projects/conDati/LinkedinAds/configs/Linkedin1.json')
     config_db = get_client_config(
         '/Users/siromanto/ralabs/0.projects/conDati/LinkedinAds/configs/Siromanto_account.json')
 

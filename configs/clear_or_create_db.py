@@ -36,6 +36,7 @@ def run(table_name, table_columns):
     ctx.close()
 
 
+
 if __name__ == '__main__':
     run(table_name='LINKEDIN_CONSOLE_RAW_DATA', table_columns=helpers.RAW_DB_COLUMNS)
     # run(table_name='LINKEDIN_CONSOLE_RAW_DATA', table_columns=helpers.QUERY_STATS_DB_COLUMNS)
