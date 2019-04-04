@@ -155,16 +155,13 @@ def get_client_config(conf_path, client_name=None):
 
 
 def perform_db_routines(sql):
-    # configfile = get_resource_path()[0]
-
-    # client_config = get_client_config(client_name, configfile)
     client_config = get_client_config(config.CLIENT_CONFIG_PATH)
     config_db = get_client_config(config.DB_CONFIG_PATH)
 
     conn = establish_db_conn(config_db['user'],
                              config_db['pwd'],
                              config_db['account'],
-                             client_config['raw_db'],
+                             client_config['db'],
                              client_config['warehouse'])
     conn.autocommit(False)
     curr = conn.cursor()

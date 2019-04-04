@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
 
-import httplib2
-import json
 import re
 from datetime import *
 
@@ -90,16 +88,8 @@ def get_campaign_data(campaign, start_date, end_date):
     start_year, start_month, start_day = start_date.split('-')
     end_year, end_month, end_day = end_date.split('-')
 
-    # credentials = helpers.get_client_config(conf_path=config.CLIENT_CONFIG_PATH)
-
-    # access_token = credentials.get("access_token")
-    # access_headers = {'Authorization': 'Bearer {}'.format(access_token)}
     company_id = campaign["id"]
-
-    # api = LinkedinAdsApi(headers=access_headers)
-
     api = prepare_api()
-
     print('START WORKING WITH CAMPAIGN --- {}, ID --- {}, STATUS --- {}'.format(campaign['campaign_name'], campaign["id"], campaign["status"]))
 
     uri_params = {

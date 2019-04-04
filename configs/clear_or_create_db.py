@@ -9,7 +9,7 @@ def run(table_name, table_columns):
     conn = helpers.establish_db_conn(config_db['user'],
                                      config_db['pwd'],
                                      config_db['account'],
-                                     client_config['raw_db'],
+                                     client_config['db'],
                                      client_config['warehouse'])
 
     cs = conn.cursor()
@@ -27,7 +27,6 @@ def run(table_name, table_columns):
     finally:
         cs.close()
     conn.close()
-
 
 
 if __name__ == '__main__':

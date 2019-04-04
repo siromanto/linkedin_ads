@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 import os
-import pandas as pd
 
 from configs import config, helpers
 
@@ -27,18 +26,15 @@ def load_daily():
 def load_raw_data_from_csv(file_path):
     file_name = file_path.rsplit('/', 1)[-1]
 
-    client_config = helpers.get_client_config(r'/Users/siromanto/ralabs/0.projects/conDati/LinkedinAds/configs/Linkedin1.json')
-    db_config = helpers.get_client_config('../configs/Siromanto_account.json')
-
-    # client_config = helpers.get_client_config(r'/opt/workbench/users/afuser/airflow/dags/credentials/BingConsole/Toweltech.json')
-    # db_config = helpers.get_client_config('credentials/SnowflakeKeys/SnowflakeComputing.json'')
+    client_config = helpers.get_client_config(config.CLIENT_CONFIG_PATH)
+    db_config = helpers.get_client_config(config.DB_CONFIG_PATH)
 
     conn = helpers.establish_db_conn(
         db_config['user'],
         db_config['pwd'],
         db_config['account'],
-        client_config['raw_db'],  # Change this in prod env
-        client_config['warehouse']  # Change this in prod env
+        client_config['db'],
+        client_config['warehouse']
     )
 
     curr = conn.cursor()
@@ -59,7 +55,7 @@ def load_raw_data_from_csv(file_path):
         conn.cursor().close()
         conn.close()
         print(f"Data imported successfully")
-    # os.remove(file_path)
+    os.remove(file_path)
 
 
 if __name__ == '__main__':
