@@ -3,6 +3,7 @@
 import os
 
 from configs import config, helpers
+# from LinkedinAds.configs import config, helpers
 
 
 def _execute_queries_for_upload(curr, report_path, storage_path, table_name):

@@ -5,6 +5,8 @@ from datetime import *
 
 from configs import config, helpers
 from linkedin.api import LinkedinAdsApi
+# from LinkedinAds.configs import config, helpers
+# from LinkedinAds.linkedin.api import LinkedinAdsApi
 
 
 def prepare_api():
