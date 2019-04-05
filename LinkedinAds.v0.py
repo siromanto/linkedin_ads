@@ -22,8 +22,8 @@ def initialize():
     pass
 
 
-with open('credentials/LinkedinAdsKeys/Linkedin1.json') as f:
-    client_conf = json.load(f)
+# with open('credentials/LinkedinAdsKeys/Linkedin1.json') as f:
+#     client_conf = json.load(f)
 
 dag_name = 'LinkedinAds.v0'
 dag = DAG(

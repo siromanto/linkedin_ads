@@ -4,7 +4,6 @@ import time
 import csv
 import snowflake.connector as connector
 
-from . import config
 
 DAYLOAD = 1
 
@@ -154,13 +153,11 @@ def get_client_config(conf_path, client_name=None):
     return conf
 
 
-def perform_db_routines(sql):
-    client_config = get_client_config(config.CLIENT_CONFIG_PATH)
-    config_db = get_client_config(config.DB_CONFIG_PATH)
+def perform_db_routines(sql, client_config, db_config):
 
-    conn = establish_db_conn(config_db['user'],
-                             config_db['pwd'],
-                             config_db['account'],
+    conn = establish_db_conn(db_config['user'],
+                             db_config['pwd'],
+                             db_config['account'],
                              client_config['db'],
                              client_config['warehouse'])
     conn.autocommit(False)

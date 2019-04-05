@@ -26,7 +26,7 @@ def per_delta(start, end, delta):
         curr += delta
 
 
-def extract_daily():
+def extract_daily(**kwargs):
     dates = [s.strftime('%Y-%m-%d') for s in per_delta(
         date.today() - timedelta(days=helpers.DAYLOAD),
         date.today(),

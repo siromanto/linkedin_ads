@@ -18,7 +18,7 @@ def load_data():
     load_raw_data_from_csv(report_path)
 
 
-def load_daily():
+def load_daily(**kwargs):
     report_path = config.DATA_PATH
     load_raw_data_from_csv(report_path)
 
@@ -47,14 +47,14 @@ def load_raw_data_from_csv(file_path):
         _execute_queries_for_upload(curr, file_path, storage_path, table_name)
         curr.execute('COMMIT')
 
-        print(f'FINISH FILE LOADING...')
+        print('FINISH FILE LOADING...')
 
     except Exception as e:
         print(e)
     finally:
         conn.cursor().close()
         conn.close()
-        print(f"Data imported successfully")
+        print("Data imported successfully")
     os.remove(file_path)
 
 
