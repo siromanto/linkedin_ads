@@ -1,9 +1,9 @@
-import json, os
-from datetime import timedelta, datetime
+import json
 import re
 import time
 import csv
 import snowflake.connector as connector
+
 
 DAYLOAD = 1
 
@@ -153,19 +153,12 @@ def get_client_config(conf_path, client_name=None):
     return conf
 
 
-def perform_db_routines(client_name, sql):
-    # configfile = get_resource_path()[0]
+def perform_db_routines(sql, client_config, db_config):
 
-    # client_config = get_client_config(client_name, configfile)
-    client_config = get_client_config(
-        r'/Users/siromanto/ralabs/0.projects/conDati/LinkedinAds/configs/Linkedin1.json')
-    config_db = get_client_config(
-        '/Users/siromanto/ralabs/0.projects/conDati/LinkedinAds/configs/Siromanto_account.json')
-
-    conn = establish_db_conn(config_db['user'],
-                             config_db['pwd'],
-                             config_db['account'],
-                             client_config['raw_db'],
+    conn = establish_db_conn(db_config['user'],
+                             db_config['pwd'],
+                             db_config['account'],
+                             client_config['db'],
                              client_config['warehouse'])
     conn.autocommit(False)
     curr = conn.cursor()
