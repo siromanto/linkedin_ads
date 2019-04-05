@@ -11,9 +11,9 @@ default_args = {
     'email': ['data-hub-service@condati.pagerduty.com'],
     'email_on_failure': False,
     'email_on_retry': False,
-    'retries': 2,
+    'retries': 1,
     'retry_delay': timedelta(minutes=15),
-    'start_date': datetime(2019, 3, 18),
+    'start_date': datetime(2019, 4, 2),
     'priority_weight': 20
 }
 
@@ -22,8 +22,8 @@ def initialize():
     pass
 
 
-with open('credentials/LinkedinAdsKeys/Linkedin.json') as f:
-    client_conf = json.load(f)
+# with open('credentials/LinkedinAdsKeys/Linkedin1.json') as f:
+#     client_conf = json.load(f)
 
 dag_name = 'LinkedinAds.v0'
 dag = DAG(
@@ -31,7 +31,7 @@ dag = DAG(
     default_args=default_args,
     # max_active_runs=1,
     concurrency=3,
-    schedule_interval='0 0 * * THU')
+    schedule_interval='0 6 * * *')
 
 extract_op = PythonOperator(task_id='extract_LinkedinAds',
                             dag=dag,

@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
 import os
-import pandas as pd
 
 from configs import config, helpers
+# from LinkedinAds.configs import config, helpers
 
 
 def _execute_queries_for_upload(curr, report_path, storage_path, table_name):
@@ -19,7 +19,7 @@ def load_data():
     load_raw_data_from_csv(report_path)
 
 
-def load_daily():
+def load_daily(**kwargs):
     report_path = config.DATA_PATH
     load_raw_data_from_csv(report_path)
 
@@ -27,18 +27,15 @@ def load_daily():
 def load_raw_data_from_csv(file_path):
     file_name = file_path.rsplit('/', 1)[-1]
 
-    client_config = helpers.get_client_config(r'/Users/siromanto/ralabs/0.projects/conDati/LinkedinAds/configs/Linkedin1.json')
-    db_config = helpers.get_client_config('../configs/Siromanto_account.json')
-
-    # client_config = helpers.get_client_config(r'/opt/workbench/users/afuser/airflow/dags/credentials/BingConsole/Toweltech.json')
-    # db_config = helpers.get_client_config('credentials/SnowflakeKeys/SnowflakeComputing.json'')
+    client_config = helpers.get_client_config(config.CLIENT_CONFIG_PATH)
+    db_config = helpers.get_client_config(config.DB_CONFIG_PATH)
 
     conn = helpers.establish_db_conn(
         db_config['user'],
         db_config['pwd'],
         db_config['account'],
-        client_config['raw_db'],  # Change this in prod env
-        client_config['warehouse']  # Change this in prod env
+        client_config['db'],
+        client_config['warehouse']
     )
 
     curr = conn.cursor()
@@ -51,15 +48,15 @@ def load_raw_data_from_csv(file_path):
         _execute_queries_for_upload(curr, file_path, storage_path, table_name)
         curr.execute('COMMIT')
 
-        print(f'FINISH FILE LOADING...')
+        print('FINISH FILE LOADING...')
 
     except Exception as e:
         print(e)
     finally:
         conn.cursor().close()
         conn.close()
-        print(f"Data imported successfully")
-    # os.remove(file_path)
+        print("Data imported successfully")
+    os.remove(file_path)
 
 
 if __name__ == '__main__':
