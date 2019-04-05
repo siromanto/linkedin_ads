@@ -88,3 +88,19 @@ DATE, PROVIDER, CAMPAIGN, MEDIUM, CHANNELGROUPING, SOURCE, CAMPAIGNSTATUS, ADCLI
 FROM   {traffic_by_day_table}
 WHERE DATE >= CURRENT_DATE()-{dayload}
 order by DATE;
+
+
+INSERT INTO ETL_LOG
+(EXECUTED, STARTDATE, ENDDATE, TABLENAME, STATUS, RUNCOUNT, RECORDS)
+with cte as
+    (select "number of rows inserted" as rown
+     from table(result_scan(last_query_id())))
+select
+to_varchar(current_timestamp, 'yyyy-mm-dd hh:mi:ss'),
+'{start_day}',
+CURRENT_DATE()-1,
+SPLIT_PART('{prod_table_traffic_by_day}', '.',1)||'_LINKEDIN',
+'GOLDEN',
+1,
+rown
+from cte;

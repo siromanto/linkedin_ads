@@ -1,8 +1,9 @@
 #!/usr/bin/env python
+
 from configs import config, helpers
 
 
-def run(table_name, table_columns):
+def create_connector():
     client_config = helpers.get_client_config(config.CLIENT_CONFIG_PATH)
     config_db = helpers.get_client_config(config.DB_CONFIG_PATH)
 
@@ -11,7 +12,11 @@ def run(table_name, table_columns):
                                      config_db['account'],
                                      client_config['db'],
                                      client_config['warehouse'])
+    return conn
 
+
+def run(table_name, table_columns):
+    conn = create_connector()
     cs = conn.cursor()
 
     try:
