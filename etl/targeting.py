@@ -6,6 +6,8 @@ import re
 
 from configs import config, helpers
 from linkedin.api import LinkedinAdsApi
+
+
 # from airflow import configuration as conf
 # from LinkedinAds.configs import config, helpers
 # from LinkedinAds.linkedin.api import LinkedinAdsApi
@@ -57,30 +59,38 @@ def extract_criteria_data(client_name, campaign_id):
     target_params = transform_criteria(targeting_сriteria)
     return target_params
 
+
 def transform_criteria(response_data):
     manual_str = "(include:(and:List((or:(urn%3Ali%3AadTargetingFacet%3Agroups:List(urn%3Ali%3Agroup%3A126178,urn%3Ali%3Agroup%3A163323,urn%3Ali%3Agroup%3A1824590,urn%3Ali%3Agroup%3A2668462,urn%3Ali%3Agroup%3A3766450,urn%3Ali%3Agroup%3A3907415,urn%3Ali%3Agroup%3A45624,urn%3Ali%3Agroup%3A63931))),(or:(urn%3Ali%3AadTargetingFacet%3Aseniorities:List(urn%3Ali%3Aseniority%3A8,urn%3Ali%3Aseniority%3A6,urn%3Ali%3Aseniority%3A4,urn%3Ali%3Aseniority%3A5,urn%3Ali%3Aseniority%3A9,urn%3Ali%3Aseniority%3A7))),(or:(urn%3Ali%3AadTargetingFacet%3Alocations:List(urn%3Ali%3Acountry%3Aca,urn%3Ali%3Acountry%3Aus))),(or:(urn%3Ali%3AadTargetingFacet%3AinterfaceLocales:List(urn%3Ali%3Alocale%3Aen_US))))))"
-    output_str = str(response_data)
+    response_str = str(response_data)
 
     substitutions = {
+        ":": "%3A",
         "'": "",
         "{": "(",
         "}": ")",
         " ": "",
         "[": "List(",
         "]": ")",
-        ":": "%3A"
+        "include%3A": "include:",
+        "and%3A": "and:",
+        "or%3A": "or:",
+        "%3AList": ":List"
     }
 
-    parsed_str = output_str.replace("'", '').replace("{", '(').replace("}", ')').replace(' ', '').\
-        replace('[', 'List(').replace(']', ')').replace(':', '%3A').replace('include%3A', 'include:').\
-        replace('and%3A', 'and:').replace('or%3A', 'or:').replace('%3AList', ':List')
+    print('start working with origin string...')
 
-    # print('start working with origin string, {} with test string'.format('the same' if manual_str == output_str else 'not matches'))
+    for check, rep in substitutions.items():
+        response_str = response_str.replace(check, rep)
 
-    print(parsed_str == manual_str)
+    print('start working with origin string, {} with test string'.format(
+        'the same' if manual_str == response_str else 'not matches'))
 
-    print('test')
-    return parsed_str
+    print('-'*200)
+    print(response_str)
+    print('-' * 200)
+
+    return response_str
 
 
 def get_target_criteria(client_name='snowflake', campaign_id='126706406'):
@@ -93,8 +103,10 @@ def get_target_criteria(client_name='snowflake', campaign_id='126706406'):
     ]
 
     data = api.audienceCountsV2(params=join_params_to_uri(uri_params)).get("elements")
+    print('*'*200)
+    print('Target audience size {}'.format(data[0].get('total')))
+    print('*' * 200)
     return data
-
 
 
 if __name__ == '__main__':
