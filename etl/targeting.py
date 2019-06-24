@@ -1,16 +1,8 @@
-import re
-from datetime import *
 import httplib2
 import json
-import re
 
 from configs import config, helpers
 from linkedin.api import LinkedinAdsApi
-
-
-# from airflow import configuration as conf
-# from LinkedinAds.configs import config, helpers
-# from LinkedinAds.linkedin.api import LinkedinAdsApi
 
 
 def prepare_api(client_name):
